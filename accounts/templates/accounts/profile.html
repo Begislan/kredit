@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-user"></i> Профиль маалыматтары</h5>
+            </div>
+            <div class="card-body text-center">
+                <i class="fas fa-user-circle fa-5x text-secondary mb-3"></i>
+                <h4>{{ profile_user.username }}</h4>
+                <p class="text-muted">{{ profile_user.get_user_type_display }}</p>
+                <hr>
+                <p><strong><i class="fas fa-envelope"></i> Email:</strong> {{ profile_user.email }}</p>
+                <p><strong><i class="fas fa-phone"></i> Телефон:</strong> {{ profile_user.phone|default:"Көрсөтүлгөн эмес" }}</p>
+                <p><strong><i class="fas fa-map-marker-alt"></i> Дарек:</strong> {{ profile_user.address|default:"Көрсөтүлгөн эмес" }}</p>
+                <p><strong><i class="fas fa-calendar"></i> Катталган:</strong> {{ profile_user.created_at|date:"d.m.Y" }}</p>
+                
+                {% if user == profile_user %}
+                    <a href="{% url 'edit_profile' %}" class="btn btn-primary w-100">
+                        <i class="fas fa-edit"></i> Профилди өзгөртүү
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="fas fa-chart-bar"></i> Статистика</h5>
+            </div>
+            <div class="card-body">
+                {% if profile_user.user_type == 'lender' %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="alert alert-success">
+                                <h5>Берилген кредиттер:</h5>
+                                <h3>{{ profile_user.get_total_credits_given|floatformat:2 }} сом</h3>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="alert alert-info">
+                                <h5>Активдүү кредиттер:</h5>
+                                <h3>{{ profile_user.credits_given.filter_active.count }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="alert alert-warning">
+                                <h5>Алынган кредиттер:</h5>
+                                <h3>{{ profile_user.get_total_credits_taken|floatformat:2 }} сом</h3>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="alert alert-danger">
+                                <h5>Калган карыз:</h5>
+                                <h3>{{ profile_user.credits_taken.aggregate.total|default:"0"|floatformat:2 }} сом</h3>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

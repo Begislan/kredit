@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h2 class="mb-4">
+            <i class="fas fa-tachometer-alt"></i> 
+            {% if user.user_type == 'lender' %}
+                Кредит берүүчүнүн кабинети
+            {% else %}
+                Кредит алуучунун кабинети
+            {% endif %}
+        </h2>
+    </div>
+</div>
+
+<div class="row">
+    {% if user.user_type == 'lender' %}
+        <div class="col-md-3">
+            <div class="dashboard-stat">
+                <i class="fas fa-users fa-2x mb-2"></i>
+                <h3>{{ active_credits_count }}</h3>
+                <p>Активдүү кредиттер</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="dashboard-stat" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                <i class="fas fa-money-bill-wave fa-2x mb-2"></i>
+                <h3>{{ total_given|floatformat:0 }} сом</h3>
+                <p>Берилген кредиттер</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="dashboard-stat" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                <i class="fas fa-clock fa-2x mb-2"></i>
+                <h3>{{ total_remaining|floatformat:0 }} сом</h3>
+                <p>Калган сумма</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="dashboard-stat" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                <i class="fas fa-percent fa-2x mb-2"></i>
+                <h3>{{ total_interest|floatformat:0 }} сом</h3>
+                <p>Жалпы процент</p>
+            </div>
+        </div>
+    {% else %}
+        <div class="col-md-4">
+            <div class="dashboard-stat">
+                <i class="fas fa-list fa-2x mb-2"></i>
+                <h3>{{ active_credits_count }}</h3>
+                <p>Активдүү кредиттер</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="dashboard-stat" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                <i class="fas fa-hand-holding-usd fa-2x mb-2"></i>
+                <h3>{{ total_taken|floatformat:0 }} сом</h3>
+                <p>Алынган кредиттер</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="dashboard-stat" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                <i class="fas fa-hourglass-half fa-2x mb-2"></i>
+                <h3>{{ total_remaining|floatformat:0 }} сом</h3>
+                <p>Калган карыз</p>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-history"></i> Акыркы кредиттер</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                {% if user.user_type == 'lender' %}
+                                    <th>Кредит алган</th>
+                                {% else %}
+                                    <th>Кредит берген</th>
+                                {% endif %}
+                                <th>Сумма</th>
+                                <th>Процент</th>
+                                <th>Калган сумма</th>
+                                <th>Статус</th>
+                                <th>Аракеттер</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for credit in credits|slice:":10" %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                {% if user.user_type == 'lender' %}
+                                    <td>{{ credit.borrower.username }}</td>
+                                {% else %}
+                                    <td>{{ credit.lender.username }}</td>
+                                {% endif %}
+                                <td>{{ credit.amount|floatformat:2 }} сом</td>
+                                <td>{{ credit.interest_rate }}%</td>
+                                <td>
+                                    <strong class="text-danger">{{ credit.remaining_amount|floatformat:2 }} сом</strong>
+                                </td>
+                                <td>
+                                    <span class="status-badge status-{{ credit.status }}">
+                                        {{ credit.get_status_display }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="{% url 'credit_detail' credit.pk %}" class="btn btn-sm btn-info">
+                                        <i class="fas fa-eye"></i> Көрүү
+                                    </a>
+                                    {% if user.user_type == 'borrower' and credit.status == 'active' %}
+                                        <a href="{% url 'make_payment' credit.pk %}" class="btn btn-sm btn-success">
+                                            <i class="fas fa-money-bill"></i> Төлөө
+                                        </a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center">Кредиттер жок</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% if credits|length > 10 %}
+                <div class="text-center">
+                    <a href="{% url 'credit_list' %}" class="btn btn-primary">Бардык кредиттерди көрүү</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

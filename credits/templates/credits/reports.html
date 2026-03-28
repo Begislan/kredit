@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h2 class="mb-4"><i class="fas fa-chart-line"></i> Отчеттор жана статистика</h2>
+        
+        <div class="row">
+            <div class="col-md-3">
+                <div class="card text-center mb-4">
+                    <div class="card-body">
+                        <h3>{{ total_credits }}</h3>
+                        <p class="text-muted">Жалпы кредиттер</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center mb-4">
+                    <div class="card-body">
+                        <h3>{{ total_amount|floatformat:0 }} сом</h3>
+                        <p class="text-muted">Жалпы сумма</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center mb-4">
+                    <div class="card-body">
+                        <h3 class="text-danger">{{ total_remaining|floatformat:0 }} сом</h3>
+                        <p class="text-muted">Калган сумма</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center mb-4">
+                    <div class="card-body">
+                        <h3 class="text-success">{{ total_amount|add:"-"|add:total_remaining|floatformat:0 }} сом</h3>
+                        <p class="text-muted">Төлөнгөн сумма</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-table"></i> Кредиттердин тизмеси</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                {% if user.user_type == 'lender' %}
+                                    <th>Кредит алган</th>
+                                {% else %}
+                                    <th>Кредит берген</th>
+                                {% endif %}
+                                <th>Сумма</th>
+                                <th>Айлык төлөм</th>
+                                <th>Калган</th>
+                                <th>Статус</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if monthly_stats %}
+                                {% for stat in monthly_stats %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ stat.borrower }}</td>
+                                    <td>{{ stat.amount|floatformat:2 }} сом</td>
+                                    <td>{{ stat.monthly_payment|floatformat:2 }} сом</td>
+                                    <td class="text-danger">{{ stat.remaining|floatformat:2 }} сом</td>
+                                    <td>{{ stat.status }}</td>
+                                </tr>
+                                {% endfor %}
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fas fa-list"></i> Менин кредиттерим</h2>
+            {% if user.user_type == 'lender' %}
+                <a href="{% url 'credit_create' %}" class="btn btn-success">
+                    <i class="fas fa-plus"></i> Жаңы кредит
+                </a>
+            {% endif %}
+        </div>
+        
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>#</th>
+                                {% if user.user_type == 'lender' %}
+                                    <th>Кредит алган</th>
+                                {% else %}
+                                    <th>Кредит берген</th>
+                                {% endif %}
+                                <th>Сумма</th>
+                                <th>Процент</th>
+                                <th>Айлык төлөм</th>
+                                <th>Калган сумма</th>
+                                <th>Статус</th>
+                                <th>Түзүлгөн</th>
+                                <th>Аракеттер</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for credit in credits %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                {% if user.user_type == 'lender' %}
+                                    <td>
+                                        <a href="{% url 'profile' credit.borrower.pk %}">
+                                            {{ credit.borrower.username }}
+                                        </a>
+                                    </td>
+                                {% else %}
+                                    <td>
+                                        <a href="{% url 'profile' credit.lender.pk %}">
+                                            {{ credit.lender.username }}
+                                        </a>
+                                    </td>
+                                {% endif %}
+                                <td>{{ credit.amount|floatformat:2 }} сом</td>
+                                <td>{{ credit.interest_rate }}%</td>
+                                <td>{{ credit.monthly_payment|floatformat:2 }} сом</td>
+                                <td>
+                                    <strong class="{% if credit.remaining_amount > 0 %}text-danger{% else %}text-success{% endif %}">
+                                        {{ credit.remaining_amount|floatformat:2 }} сом
+                                    </strong>
+                                </td>
+                                <td>
+                                    <span class="status-badge status-{{ credit.status }}">
+                                        {{ credit.get_status_display }}
+                                    </span>
+                                </td>
+                                <td>{{ credit.created_at|date:"d.m.Y" }}</td>
+                                <td>
+                                    <a href="{% url 'credit_detail' credit.pk %}" class="btn btn-sm btn-info">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    {% if user.user_type == 'lender' and credit.status == 'active' %}
+                                        <a href="{% url 'credit_edit' credit.pk %}" class="btn btn-sm btn-warning">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                    {% endif %}
+                                    {% if user.user_type == 'borrower' and credit.status == 'active' %}
+                                        <a href="{% url 'make_payment' credit.pk %}" class="btn btn-sm btn-success">
+                                            <i class="fas fa-money-bill"></i>
+                                        </a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="9" class="text-center">Кредиттер жок</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

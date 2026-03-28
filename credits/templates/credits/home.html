@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12 text-center">
+        <div class="jumbotron bg-light p-5 rounded">
+            <h1 class="display-4">
+                <i class="fas fa-money-bill-wave text-primary"></i> 
+                Кредит Системасына кош келиңиз!
+            </h1>
+            <p class="lead mt-3">
+                Кредиттерди оңой башкаруу, төлөмдөрдү көзөмөлдөө жана автоматтык эсептөөлөр.
+            </p>
+            <hr class="my-4">
+            <p>
+                Биздин система аркылуу сиз кредиттерди оңой берүү жана алуу, 
+                төлөмдөрдү көзөмөлдөө жана отчетторду түзүү мүмкүнчүлүгүнө ээ болосуз.
+            </p>
+            
+            {% if not user.is_authenticated %}
+                <div class="mt-4">
+                    <a href="{% url 'register' %}" class="btn btn-primary btn-lg me-3">
+                        <i class="fas fa-user-plus"></i> Катталуу
+                    </a>
+                    <a href="{% url 'login' %}" class="btn btn-success btn-lg">
+                        <i class="fas fa-sign-in-alt"></i> Киришүү
+                    </a>
+                </div>
+            {% else %}
+                <div class="mt-4">
+                    <a href="{% url 'dashboard' %}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-tachometer-alt"></i> Өз кабинетке өтүү
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 text-center">
+            <div class="card-body">
+                <i class="fas fa-hand-holding-usd fa-3x text-primary mb-3"></i>
+                <h5 class="card-title">Кредиттерди башкаруу</h5>
+                <p class="card-text">
+                    Кредиттерди оңой берүү жана алуу, бардык маалыматтарды бир жерден көрүү.
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 text-center">
+            <div class="card-body">
+                <i class="fas fa-calculator fa-3x text-success mb-3"></i>
+                <h5 class="card-title">Автоматтык эсептөөлөр</h5>
+                <p class="card-text">
+                    Проценттерди, айлык төлөмдөрдү жана калган суммаларды автоматтык эсептөө.
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 text-center">
+            <div class="card-body">
+                <i class="fas fa-chart-line fa-3x text-info mb-3"></i>
+                <h5 class="card-title">Отчеттор жана статистика</h5>
+                <p class="card-text">
+                    Толук статистика, графиктер жана отчеттор менен кредиттериңизди көзөмөлдөө.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-3">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-user-check"></i> Кредит берүүчүлөр үчүн</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-check-circle text-success me-2"></i> Жаңы кредиттерди берүү</li>
+                    <li><i class="fas fa-check-circle text-success me-2"></i> Кредиттердин тизмесин көрүү</li>
+                    <li><i class="fas fa-check-circle text-success me-2"></i> Кредиттерди өзгөртүү</li>
+                    <li><i class="fas fa-check-circle text-success me-2"></i> Төлөмдөрдү көзөмөлдөө</li>
+                    <li><i class="fas fa-check-circle text-success me-2"></i> Толук отчетторду түзүү</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="fas fa-user-clock"></i> Кредит алуучулар үчүн</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-check-circle text-success me-2"></i> Өзүнүн кредиттерин көрүү</li>
+                    <li><i class="fas fa-check-circle text-success me-2"></i> Калган карызды көрүү</li>
+                    <li><i class="fas fa-check-circle text-success me-2"></i> Онлайн төлөмдөрдү жасау</li>
+                    <li><i class="fas fa-check-circle text-success me-2"></i> Төлөм тарыхын көрүү</li>
+                    <li><i class="fas fa-check-circle text-success me-2"></i> Төлөм графигин көрүү</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
