@@ -5,17 +5,17 @@
     <div class="col-md-6">
         <div class="card">
             <div class="card-header bg-primary text-white">
-                <h4 class="mb-0"><i class="fas fa-edit"></i> Профилди өзгөртүү</h4>
+                <h4 class="mb-0"><i class="fas fa-edit"></i> Редактировать профиль</h4>
             </div>
             <div class="card-body">
                 <form method="post">
                     {% csrf_token %}
                     <div class="mb-3">
-                        <label for="first_name" class="form-label">Аты</label>
+                        <label for="first_name" class="form-label">Имя</label>
                         <input type="text" class="form-control" id="first_name" name="first_name" value="{{ user.first_name }}">
                     </div>
                     <div class="mb-3">
-                        <label for="last_name" class="form-label">Фамилиясы</label>
+                        <label for="last_name" class="form-label">Фамилия</label>
                         <input type="text" class="form-control" id="last_name" name="last_name" value="{{ user.last_name }}">
                     </div>
                     <div class="mb-3">
@@ -27,11 +27,11 @@
                         <input type="text" class="form-control" id="phone" name="phone" value="{{ user.phone }}">
                     </div>
                     <div class="mb-3">
-                        <label for="address" class="form-label">Дарек</label>
+                        <label for="address" class="form-label">Адрес</label>
                         <textarea class="form-control" id="address" name="address" rows="3">{{ user.address }}</textarea>
                     </div>
                     <button type="submit" class="btn btn-primary w-100">
-                        <i class="fas fa-save"></i> Сактоо
+                        <i class="fas fa-save"></i> Сохранить
                     </button>
                 </form>
             </div>

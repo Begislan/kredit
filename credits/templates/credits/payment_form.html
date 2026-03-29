@@ -6,20 +6,20 @@
     <div class="col-md-6">
         <div class="card">
             <div class="card-header bg-success text-white">
-                <h4 class="mb-0"><i class="fas fa-money-bill"></i> Төлөм жасау</h4>
+                <h4 class="mb-0"><i class="fas fa-money-bill"></i> Совершить платеж</h4>
             </div>
             <div class="card-body">
                 <div class="alert alert-info">
-                    <strong>Кредит суммасы:</strong> {{ credit.amount|floatformat:2 }} сом<br>
-                    <strong>Калган карыз:</strong> {{ credit.remaining_amount|floatformat:2 }} сом<br>
-                    <strong>Айлык төлөм:</strong> {{ credit.monthly_payment|floatformat:2 }} сом
+                    <strong>Сумма кредита:</strong> {{ credit.amount|floatformat:2 }} сом<br>
+                    <strong>Остаток долга:</strong> {{ credit.remaining_amount|floatformat:2 }} сом<br>
+                    <strong>Ежемесячный платеж:</strong> {{ credit.monthly_payment|floatformat:2 }} сом
                 </div>
                 
                 <form method="post">
                     {% csrf_token %}
                     {{ form|crispy }}
                     <button type="submit" class="btn btn-success w-100">
-                        <i class="fas fa-check"></i> Төлөмдү жүргүзүү
+                        <i class="fas fa-check"></i> Выполнить платеж
                     </button>
                 </form>
             </div>

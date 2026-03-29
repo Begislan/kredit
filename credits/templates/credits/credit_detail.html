@@ -5,8 +5,8 @@
     <div class="col-md-12">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Башкы бет</a></li>
-                <li class="breadcrumb-item"><a href="{% url 'credit_list' %}">Кредиттер</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Главная</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'credit_list' %}">Кредиты</a></li>
                 <li class="breadcrumb-item active">Кредит №{{ credit.id }}</li>
             </ol>
         </nav>
@@ -15,35 +15,35 @@
             <div class="col-md-8">
                 <div class="card mb-4">
                     <div class="card-header bg-primary text-white">
-                        <h4 class="mb-0"><i class="fas fa-info-circle"></i> Кредит маалыматтары</h4>
+                        <h4 class="mb-0"><i class="fas fa-info-circle"></i> Информация о кредите</h4>
                     </div>
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-6">
-                                <p><strong><i class="fas fa-user"></i> Кредит берүүчү:</strong> 
+                                <p><strong><i class="fas fa-user"></i> Кредитор:</strong> 
                                     <a href="{% url 'profile' credit.lender.pk %}">{{ credit.lender.username }}</a>
                                 </p>
-                                <p><strong><i class="fas fa-user"></i> Кредит алуучу:</strong> 
+                                <p><strong><i class="fas fa-user"></i> Заемщик:</strong> 
                                     <a href="{% url 'profile' credit.borrower.pk %}">{{ credit.borrower.username }}</a>
                                 </p>
-                                <p><strong><i class="fas fa-money-bill"></i> Кредит суммасы:</strong> 
+                                <p><strong><i class="fas fa-money-bill"></i> Сумма кредита:</strong> 
                                     {{ credit.amount|floatformat:2 }} сом
                                 </p>
-                                <p><strong><i class="fas fa-percent"></i> Проценттик ставка:</strong> 
+                                <p><strong><i class="fas fa-percent"></i> Процентная ставка:</strong> 
                                     {{ credit.interest_rate }}%
                                 </p>
                             </div>
                             <div class="col-md-6">
-                                <p><strong><i class="fas fa-chart-line"></i> Жалпы сумма (процент менен):</strong> 
+                                <p><strong><i class="fas fa-chart-line"></i> Общая сумма (с процентами):</strong> 
                                     {{ credit.get_total_with_interest|floatformat:2 }} сом
                                 </p>
-                                <p><strong><i class="fas fa-calendar-week"></i> Айлык төлөм:</strong> 
+                                <p><strong><i class="fas fa-calendar-week"></i> Ежемесячный платеж:</strong> 
                                     {{ credit.monthly_payment|floatformat:2 }} сом
                                 </p>
-                                <p><strong><i class="fas fa-clock"></i> Мөөнөт:</strong> 
-                                    {{ credit.duration_months }} ай
+                                <p><strong><i class="fas fa-clock"></i> Срок:</strong> 
+                                    {{ credit.duration_months }} месяцев
                                 </p>
-                                <p><strong><i class="fas fa-calendar-alt"></i> Аяктаган күн:</strong> 
+                                <p><strong><i class="fas fa-calendar-alt"></i> Дата окончания:</strong> 
                                     {{ credit.end_date|date:"d.m.Y" }}
                                 </p>
                             </div>
@@ -54,13 +54,13 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="alert alert-info">
-                                    <h5>Төлөнгөн сумма:</h5>
+                                    <h5>Оплачено:</h5>
                                     <h3>{{ total_paid|floatformat:2 }} сом</h3>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="alert alert-danger">
-                                    <h5>Калган сумма:</h5>
+                                    <h5>Остаток:</h5>
                                     <h3>{{ credit.remaining_amount|floatformat:2 }} сом</h3>
                                 </div>
                             </div>
@@ -70,13 +70,13 @@
                             <div class="progress-bar bg-success" role="progressbar" 
                                  style="width: {{ remaining_percent|floatformat:0 }}%"
                                  aria-valuenow="{{ remaining_percent }}" aria-valuemin="0" aria-valuemax="100">
-                                {{ remaining_percent|floatformat:0 }}% төлөндү
+                                {{ remaining_percent|floatformat:0 }}% оплачено
                             </div>
                         </div>
                         
                         {% if user.user_type == 'borrower' and credit.status == 'active' %}
                             <a href="{% url 'make_payment' credit.pk %}" class="btn btn-success w-100">
-                                <i class="fas fa-money-bill"></i> Төлөм жасау
+                                <i class="fas fa-money-bill"></i> Совершить платеж
                             </a>
                         {% endif %}
                     </div>
@@ -86,7 +86,7 @@
             <div class="col-md-4">
                 <div class="card mb-4">
                     <div class="card-header bg-info text-white">
-                        <h5 class="mb-0"><i class="fas fa-chart-pie"></i> Кредиттин абалы</h5>
+                        <h5 class="mb-0"><i class="fas fa-chart-pie"></i> Состояние кредита</h5>
                     </div>
                     <div class="card-body text-center">
                         <h4 class="mb-3">Статус: 
@@ -102,31 +102,31 @@
         
         <div class="card">
             <div class="card-header bg-success text-white">
-                <h5 class="mb-0"><i class="fas fa-history"></i> Төлөм тарыхы</h5>
+                <h5 class="mb-0"><i class="fas fa-history"></i> История платежей</h5>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-hover">
                         <thead>
-                            <tr>
+                             <tr>
                                 <th>#</th>
                                 <th>Сумма</th>
-                                <th>Төлөм күнү</th>
-                                <th>Түшүндүрмө</th>
-                            </tr>
+                                <th>Дата платежа</th>
+                                <th>Примечание</th>
+                             </tr>
                         </thead>
                         <tbody>
                             {% for payment in payments %}
-                            <tr>
+                             <tr>
                                 <td>{{ forloop.counter }}</td>
                                 <td class="text-success">{{ payment.amount|floatformat:2 }} сом</td>
                                 <td>{{ payment.payment_date|date:"d.m.Y H:i" }}</td>
                                 <td>{{ payment.description|default:"-" }}</td>
-                            </tr>
+                             </tr>
                             {% empty %}
-                            <tr>
-                                <td colspan="4" class="text-center">Төлөмдөр жок</td>
-                            </tr>
+                             <tr>
+                                <td colspan="4" class="text-center">Платежей нет</td>
+                             </tr>
                             {% endfor %}
                         </tbody>
                     </table>
@@ -143,7 +143,7 @@
     var chart = new Chart(ctx, {
         type: 'doughnut',
         data: {
-            labels: ['Төлөнгөн ({{ total_paid|floatformat:2 }} сом)', 'Калган ({{ credit.remaining_amount|floatformat:2 }} сом)'],
+            labels: ['Оплачено ({{ total_paid|floatformat:2 }} сом)', 'Остаток ({{ credit.remaining_amount|floatformat:2 }} сом)'],
             datasets: [{
                 data: [{{ total_paid }}, {{ credit.remaining_amount }}],
                 backgroundColor: ['#28a745', '#dc3545'],

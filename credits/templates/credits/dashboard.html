@@ -7,9 +7,9 @@
         <h2 class="mb-4">
             <i class="fas fa-tachometer-alt"></i> 
             {% if user.user_type == 'lender' %}
-                Кредит берүүчүнүн кабинети
+                Кабинет кредитора
             {% else %}
-                Кредит алуучунун кабинети
+                Кабинет заемщика
             {% endif %}
         </h2>
     </div>
@@ -21,28 +21,28 @@
             <div class="dashboard-stat">
                 <i class="fas fa-users fa-2x mb-2"></i>
                 <h3>{{ active_credits_count }}</h3>
-                <p>Активдүү кредиттер</p>
+                <p>Активных кредитов</p>
             </div>
         </div>
         <div class="col-md-3">
             <div class="dashboard-stat" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
                 <i class="fas fa-money-bill-wave fa-2x mb-2"></i>
                 <h3>{{ total_given|floatformat:0 }} сом</h3>
-                <p>Берилген кредиттер</p>
+                <p>Выдано кредитов</p>
             </div>
         </div>
         <div class="col-md-3">
             <div class="dashboard-stat" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
                 <i class="fas fa-clock fa-2x mb-2"></i>
                 <h3>{{ total_remaining|floatformat:0 }} сом</h3>
-                <p>Калган сумма</p>
+                <p>Остаток</p>
             </div>
         </div>
         <div class="col-md-3">
             <div class="dashboard-stat" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
                 <i class="fas fa-percent fa-2x mb-2"></i>
                 <h3>{{ total_interest|floatformat:0 }} сом</h3>
-                <p>Жалпы процент</p>
+                <p>Общая сумма процентов</p>
             </div>
         </div>
     {% else %}
@@ -50,21 +50,21 @@
             <div class="dashboard-stat">
                 <i class="fas fa-list fa-2x mb-2"></i>
                 <h3>{{ active_credits_count }}</h3>
-                <p>Активдүү кредиттер</p>
+                <p>Активных кредитов</p>
             </div>
         </div>
         <div class="col-md-4">
             <div class="dashboard-stat" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
                 <i class="fas fa-hand-holding-usd fa-2x mb-2"></i>
                 <h3>{{ total_taken|floatformat:0 }} сом</h3>
-                <p>Алынган кредиттер</p>
+                <p>Получено кредитов</p>
             </div>
         </div>
         <div class="col-md-4">
             <div class="dashboard-stat" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
                 <i class="fas fa-hourglass-half fa-2x mb-2"></i>
                 <h3>{{ total_remaining|floatformat:0 }} сом</h3>
-                <p>Калган карыз</p>
+                <p>Остаток долга</p>
             </div>
         </div>
     {% endif %}
@@ -74,7 +74,7 @@
     <div class="col-md-12">
         <div class="card">
             <div class="card-header">
-                <h5><i class="fas fa-history"></i> Акыркы кредиттер</h5>
+                <h5><i class="fas fa-history"></i> Последние кредиты</h5>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
@@ -83,17 +83,16 @@
                             <tr>
                                 <th>#</th>
                                 {% if user.user_type == 'lender' %}
-                                    <th>Кредит алган</th>
+                                    <th>Заемщик</th>
                                 {% else %}
-                                    <th>Кредит берген</th>
+                                    <th>Кредитор</th>
                                 {% endif %}
                                 <th>Сумма</th>
                                 <th>Процент</th>
-                                <th>Калган сумма</th>
+                                <th>Остаток</th>
                                 <th>Статус</th>
-                                <th>Аракеттер</th>
-                            </tr>
-                        </thead>
+                                <th>Действия</th>
+                            </thead>
                         <tbody>
                             {% for credit in credits|slice:":10" %}
                             <tr>
@@ -115,18 +114,18 @@
                                 </td>
                                 <td>
                                     <a href="{% url 'credit_detail' credit.pk %}" class="btn btn-sm btn-info">
-                                        <i class="fas fa-eye"></i> Көрүү
+                                        <i class="fas fa-eye"></i> Просмотр
                                     </a>
                                     {% if user.user_type == 'borrower' and credit.status == 'active' %}
                                         <a href="{% url 'make_payment' credit.pk %}" class="btn btn-sm btn-success">
-                                            <i class="fas fa-money-bill"></i> Төлөө
+                                            <i class="fas fa-money-bill"></i> Оплатить
                                         </a>
                                     {% endif %}
                                 </td>
                             </tr>
                             {% empty %}
                             <tr>
-                                <td colspan="7" class="text-center">Кредиттер жок</td>
+                                <td colspan="7" class="text-center">Нет кредитов</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -134,7 +133,7 @@
                 </div>
                 {% if credits|length > 10 %}
                 <div class="text-center">
-                    <a href="{% url 'credit_list' %}" class="btn btn-primary">Бардык кредиттерди көрүү</a>
+                    <a href="{% url 'credit_list' %}" class="btn btn-primary">Показать все кредиты</a>
                 </div>
                 {% endif %}
             </div>

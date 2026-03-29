@@ -16,7 +16,7 @@ def dashboard(request):
     user = request.user
     
     if user.user_type == 'lender':
-        # Кредит берүүчүнүн статистикасы
+        # Статистика кредитора
         credits = Credit.objects.filter(lender=user)
         active_credits = credits.filter(status='active')
         total_given = credits.aggregate(total=Sum('amount'))['total'] or Decimal('0')
@@ -31,7 +31,7 @@ def dashboard(request):
             'total_interest': total_interest,
         }
     else:
-        # Кредит алуучунун статистикасы
+        # Статистика заемщика
         credits = Credit.objects.filter(borrower=user)
         active_credits = credits.filter(status='active')
         total_taken = credits.aggregate(total=Sum('amount'))['total'] or Decimal('0')
@@ -60,7 +60,7 @@ def credit_list(request):
 @login_required
 def credit_create(request):
     if request.user.user_type != 'lender':
-        messages.error(request, 'Кредит берүү үчүн сиз кредит берүүчү болушуңуз керек!')
+        messages.error(request, 'Для выдачи кредита вы должны быть кредитором!')
         return redirect('dashboard')
     
     if request.method == 'POST':
@@ -70,28 +70,28 @@ def credit_create(request):
             credit.lender = request.user
             credit.save()
             
-            # Историяга жазуу
+            # Запись в историю
             CreditHistory.objects.create(
                 credit=credit,
-                action='Кредит түзүлдү',
-                new_value=f"Сумма: {credit.amount}, Процент: {credit.interest_rate}%, Мөөнөт: {credit.duration_months} ай",
+                action='Кредит создан',
+                new_value=f"Сумма: {credit.amount}, Процент: {credit.interest_rate}%, Срок: {credit.duration_months} месяцев",
                 changed_by=request.user
             )
             
-            messages.success(request, 'Кредит ийгиликтүү берилди!')
+            messages.success(request, 'Кредит успешно выдан!')
             return redirect('credit_detail', pk=credit.pk)
     else:
         form = CreditForm()
     
-    return render(request, 'credits/credit_form.html', {'form': form, 'title': 'Жаңы кредит'})
+    return render(request, 'credits/credit_form.html', {'form': form, 'title': 'Новый кредит'})
 
 @login_required
 def credit_detail(request, pk):
     credit = get_object_or_404(Credit, pk=pk)
     
-    # Уруксатты текшерүү
+    # Проверка прав
     if request.user != credit.lender and request.user != credit.borrower:
-        messages.error(request, 'Бул кредитти көрүүгө уруксатыңыз жок!')
+        messages.error(request, 'У вас нет прав для просмотра этого кредита!')
         return redirect('dashboard')
     
     payments = credit.payments.all()
@@ -109,9 +109,9 @@ def credit_detail(request, pk):
 def make_payment(request, pk):
     credit = get_object_or_404(Credit, pk=pk)
     
-    # Төлөмдү кредит алуучу гана жасай алат
+    # Платеж может совершить только заемщик
     if request.user != credit.borrower:
-        messages.error(request, 'Төлөмдү кредит алган адам гана жасай алат!')
+        messages.error(request, 'Платеж может совершить только заемщик!')
         return redirect('credit_detail', pk=pk)
     
     if request.method == 'POST':
@@ -120,22 +120,22 @@ def make_payment(request, pk):
             payment = form.save(commit=False)
             payment.credit = credit
             
-            # Төлөм суммасы калган суммадан ашпасын текшерүү
+            # Проверка, чтобы сумма платежа не превышала остаток
             if payment.amount > credit.remaining_amount:
-                messages.error(request, f'Төлөм суммасы калган суммадан ({credit.remaining_amount} сом) ашпашы керек!')
+                messages.error(request, f'Сумма платежа не должна превышать остаток ({credit.remaining_amount} сом)!')
                 return redirect('make_payment', pk=pk)
             
             payment.save()
             
-            # Историяга жазуу
+            # Запись в историю
             CreditHistory.objects.create(
                 credit=credit,
-                action='Төлөм жасалды',
-                new_value=f"{payment.amount} сом төлөндү",
+                action='Совершен платеж',
+                new_value=f"Оплачено {payment.amount} сом",
                 changed_by=request.user
             )
             
-            messages.success(request, f'{payment.amount} сом төлөндү!')
+            messages.success(request, f'{payment.amount} сом оплачено!')
             return redirect('credit_detail', pk=pk)
     else:
         form = PaymentForm()
@@ -147,7 +147,7 @@ def credit_edit(request, pk):
     credit = get_object_or_404(Credit, pk=pk)
     
     if request.user != credit.lender:
-        messages.error(request, 'Кредитти өзгөртүү үчүн сиз кредит берүүчү болушуңуз керек!')
+        messages.error(request, 'Для редактирования кредита вы должны быть кредитором!')
         return redirect('credit_detail', pk=pk)
     
     if request.method == 'POST':
@@ -156,21 +156,21 @@ def credit_edit(request, pk):
             old_credit = Credit.objects.get(pk=pk)
             form.save()
             
-            # Историяга жазуу
+            # Запись в историю
             CreditHistory.objects.create(
                 credit=credit,
-                action='Кредит өзгөртүлдү',
+                action='Кредит изменен',
                 old_value=f"Сумма: {old_credit.amount}, Процент: {old_credit.interest_rate}%",
                 new_value=f"Сумма: {credit.amount}, Процент: {credit.interest_rate}%",
                 changed_by=request.user
             )
             
-            messages.success(request, 'Кредит маалыматтары жаңыртылды!')
+            messages.success(request, 'Информация о кредите обновлена!')
             return redirect('credit_detail', pk=pk)
     else:
         form = CreditForm(instance=credit)
     
-    return render(request, 'credits/credit_form.html', {'form': form, 'title': 'Кредитти өзгөртүү'})
+    return render(request, 'credits/credit_form.html', {'form': form, 'title': 'Редактировать кредит'})
 
 @login_required
 def reports(request):
@@ -179,7 +179,7 @@ def reports(request):
     if user.user_type == 'lender':
         credits = Credit.objects.filter(lender=user)
         
-        # Айлар боюнча статистика
+        # Статистика по месяцам
         monthly_stats = []
         for credit in credits:
             monthly_stats.append({

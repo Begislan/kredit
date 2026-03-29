@@ -6,20 +6,20 @@ from datetime import timedelta
 
 class Credit(models.Model):
     STATUS_CHOICES = (
-        ('active', 'Активдүү'),
-        ('closed', 'Жабылган'),
-        ('overdue', 'Мөөнөтү өткөн'),
+        ('active', 'Активный'),
+        ('closed', 'Закрыт'),
+        ('overdue', 'Просрочен'),
     )
     
     lender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, 
                                related_name='credits_given', limit_choices_to={'user_type': 'lender'})
     borrower = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, 
                                  related_name='credits_taken', limit_choices_to={'user_type': 'borrower'})
-    amount = models.DecimalField(max_digits=12, decimal_places=2, verbose_name='Кредит суммасы')
-    interest_rate = models.DecimalField(max_digits=5, decimal_places=2, verbose_name='Проценттик ставка (%)')
-    duration_months = models.IntegerField(verbose_name='Мөөнөт (ай)')
-    remaining_amount = models.DecimalField(max_digits=12, decimal_places=2, verbose_name='Калган сумма')
-    monthly_payment = models.DecimalField(max_digits=12, decimal_places=2, verbose_name='Айлык төлөм')
+    amount = models.DecimalField(max_digits=12, decimal_places=2, verbose_name='Сумма кредита')
+    interest_rate = models.DecimalField(max_digits=5, decimal_places=2, verbose_name='Процентная ставка (%)')
+    duration_months = models.IntegerField(verbose_name='Срок (месяцев)')
+    remaining_amount = models.DecimalField(max_digits=12, decimal_places=2, verbose_name='Остаток')
+    monthly_payment = models.DecimalField(max_digits=12, decimal_places=2, verbose_name='Ежемесячный платеж')
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='active')
     start_date = models.DateTimeField(auto_now_add=True)
     end_date = models.DateTimeField()
@@ -31,11 +31,11 @@ class Credit(models.Model):
     
     def save(self, *args, **kwargs):
         if not self.pk:
-            # Кредиттин жалпы суммасын эсептөө (процент менен)
+            # Расчет общей суммы кредита (с процентами)
             total_with_interest = self.amount * (1 + self.interest_rate / 100)
             self.remaining_amount = total_with_interest
             self.monthly_payment = total_with_interest / self.duration_months
-            # Кредиттин аяктаган күнүн эсептөө
+            # Расчет даты окончания кредита
             self.end_date = timezone.now() + timedelta(days=self.duration_months * 30)
         super().save(*args, **kwargs)
     
@@ -49,7 +49,7 @@ class Credit(models.Model):
         return f"{self.borrower.username} - {self.amount} сом"
     
     def update_remaining(self):
-        """Калган сумманы жаңыртуу"""
+        """Обновление остатка"""
         payments = self.payments.aggregate(total=models.Sum('amount'))['total'] or Decimal('0')
         self.remaining_amount = self.get_total_with_interest() - payments
         if self.remaining_amount <= 0:
@@ -58,9 +58,9 @@ class Credit(models.Model):
 
 class Payment(models.Model):
     credit = models.ForeignKey(Credit, on_delete=models.CASCADE, related_name='payments')
-    amount = models.DecimalField(max_digits=12, decimal_places=2, verbose_name='Төлөм суммасы')
+    amount = models.DecimalField(max_digits=12, decimal_places=2, verbose_name='Сумма платежа')
     payment_date = models.DateTimeField(default=timezone.now)
-    description = models.TextField(blank=True, verbose_name='Түшүндүрмө')
+    description = models.TextField(blank=True, verbose_name='Примечание')
     created_at = models.DateTimeField(auto_now_add=True)
     
     class Meta:
@@ -75,7 +75,7 @@ class Payment(models.Model):
 
 class CreditHistory(models.Model):
     credit = models.ForeignKey(Credit, on_delete=models.CASCADE, related_name='history')
-    action = models.CharField(max_length=50, verbose_name='Аракет')
+    action = models.CharField(max_length=50, verbose_name='Действие')
     old_value = models.TextField(blank=True)
     new_value = models.TextField(blank=True)
     changed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)

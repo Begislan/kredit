@@ -5,8 +5,8 @@ from decimal import Decimal
 
 class User(AbstractUser):
     USER_TYPE_CHOICES = (
-        ('lender', 'Кредит берүүчү'),
-        ('borrower', 'Кредит алуучу'),
+        ('lender', 'Кредитор'),
+        ('borrower', 'Заемщик'),
     )
     
     user_type = models.CharField(max_length=10, choices=USER_TYPE_CHOICES)

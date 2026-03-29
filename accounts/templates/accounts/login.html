@@ -6,19 +6,19 @@
     <div class="col-md-5">
         <div class="card">
             <div class="card-header bg-primary text-white">
-                <h4 class="mb-0"><i class="fas fa-sign-in-alt"></i> Киришүү</h4>
+                <h4 class="mb-0"><i class="fas fa-sign-in-alt"></i> Вход</h4>
             </div>
             <div class="card-body">
                 <form method="post">
                     {% csrf_token %}
                     {{ form|crispy }}
                     <button type="submit" class="btn btn-primary w-100">
-                        <i class="fas fa-sign-in-alt"></i> Киришүү
+                        <i class="fas fa-sign-in-alt"></i> Вход
                     </button>
                 </form>
                 <hr>
                 <p class="text-center mb-0">
-                    Аккаунтуңуз жокпу? <a href="{% url 'register' %}">Катталуу</a>
+                    Аккаунтуңуз жокпу? <a href="{% url 'register' %}">Регистрация</a>
                 </p>
             </div>
         </div>
